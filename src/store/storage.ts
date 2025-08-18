@@ -3,6 +3,7 @@ import { StateStorage } from 'zustand/middleware';
 
 export const storage = new MMKV({
   id: 'todo-app-storage',
+  
 });
 
 export const zustandStorage: StateStorage = {
