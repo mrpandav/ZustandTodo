@@ -19,7 +19,8 @@ const HomeScreen = () => {
   const [newTodoText, setNewTodoText] = useState("");
   const [editingTodoId, setEditingTodoId] = useState(null);
   const [editingTodoText, setEditingTodoText] = useState("");
-const [isHydrated, setIsHydrated] = useState(false);
+const { selectedList, addToSelectedList, removeFromSelectedList } = useTodoStore();
+
 
 
   const handleAdd = () => {
@@ -52,6 +53,14 @@ const [isHydrated, setIsHydrated] = useState(false);
       { cancelable: true }
     );
   };
+
+const handleAddToList = (item) => {
+  addToSelectedList(item);
+};
+
+const handleRemoveFromList = (id) => {
+  removeFromSelectedList(id);
+};
 
 
   
@@ -88,6 +97,10 @@ const [isHydrated, setIsHydrated] = useState(false);
                 title="Delete"
                onPress={() => Delete(item.id)} color="red" />
             </TouchableOpacity>
+            <Button
+  title="Add list"
+  onPress={() => handleAddToList(item)}
+/>
           </>
         )}
       </View>
@@ -116,13 +129,37 @@ const [isHydrated, setIsHydrated] = useState(false);
       </View>
 
       
-      <FlatList
-        data={todos}
-         showsVerticalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        style={{ marginTop: 20 }}
-        />
+     <View style={{ marginTop: 20 }}>
+  <Text style={{ fontWeight: "bold", marginBottom: 10 }}>Added List Data:</Text>
+  {selectedList.length === 0 ? (
+    <Text>No items added to the list yet.</Text>
+  ) : (
+    selectedList.map((item) => (
+      <View
+        key={item.id}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingVertical: 5,
+        }}
+      >
+        <Text style={{ flex: 1 }}>• {item.text}</Text>
+        <Button title="Remove" color="red" onPress={() => handleRemoveFromList(item.id)} />
+      </View>
+    ))
+  )}
+</View>
+
+
+     <FlatList
+  data={todos.filter(todo => !selectedList.some(selected => selected.id === todo.id))}
+  showsVerticalScrollIndicator={false}
+  renderItem={renderItem}
+  keyExtractor={(item) => item.id.toString()}
+  style={{ marginTop: 20 }}
+/>
+
         </KeyboardAvoidingView>
     </SafeAreaView>
   );
