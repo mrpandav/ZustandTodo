@@ -13,6 +13,14 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput } from 'react-native-gesture-handler';
 import useTodoStore from '../store/useTodoStore';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
+
+export type Props = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
 
 const HomeScreen = () => {
   const { todos, addTodo, deleteTodo, editTodo } = useTodoStore();
@@ -85,18 +93,21 @@ const HomeScreen = () => {
           <Button title="Save" onPress={handleSaveEdit} />
         ) : (
           <>
-            <Button
-              title="Edit"
+            <TouchableOpacity
               onPress={() => handleEditPress(item.id, item.text)}
-            />
-            <TouchableOpacity>
-              <Button
-                title="Delete"
-                onPress={() => Delete(item.id)}
-                color="red"
-              />
+            >
+              <Feather name="edit" size={30} color="rgba(17, 5, 249, 1)" />
             </TouchableOpacity>
-            <Button title="Add list" onPress={() => handleAddToList(item)} />
+
+            <TouchableOpacity>
+              <TouchableOpacity onPress={() => Delete(item.id)}>
+                <Icon name="delete" size={30} color="rgba(255, 3, 3, 1)" />
+              </TouchableOpacity>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleAddToList(item)}>
+              <Icon name="check" size={30} color="rgba(15, 134, 13, 1)" />
+            </TouchableOpacity>
           </>
         )}
       </View>
@@ -125,12 +136,19 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
+        <FlatList
+          data={todos.filter(
+            todo => !selectedList.some(selected => selected.id === todo.id),
+          )}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={item => item.id.toString()}
+          style={{ marginTop: 20 }}
+        />
         <View style={{ marginTop: 20 }}>
-          <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>
-            Added List Data:
-          </Text>
+          <Text style={styles.title}>Completed Task:</Text>
           {selectedList.length === 0 ? (
-            <Text>No items added to the list yet.</Text>
+            <Text>No Completed Task.</Text>
           ) : (
             selectedList.map(item => (
               <View
@@ -143,25 +161,14 @@ const HomeScreen = () => {
                 }}
               >
                 <Text style={{ flex: 1 }}>• {item.text}</Text>
-                <Button
-                  title="Remove"
-                  color="red"
-                  onPress={() => handleRemoveFromList(item.id)}
-                />
+
+                <TouchableOpacity onPress={() => handleRemoveFromList(item.id)}>
+                  <Icon name="close" size={30} color="rgba(254, 0, 0, 1)" />
+                </TouchableOpacity>
               </View>
             ))
           )}
         </View>
-
-        <FlatList
-          data={todos.filter(
-            todo => !selectedList.some(selected => selected.id === todo.id),
-          )}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
-          style={{ marginTop: 20 }}
-        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

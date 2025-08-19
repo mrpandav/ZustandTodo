@@ -2,9 +2,27 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { zustandStorage } from './storage';
 
-const useTodoStore = create(
+export interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+interface TodoStore {
+  todos: Todo[];
+  selectedList: Todo[];
+
+  addTodo: (text: string) => void;
+  deleteTodo: (id: number) => void;
+  editTodo: (id: number, newText: string) => void;
+
+  addToSelectedList: (item: Todo) => void;
+  removeFromSelectedList: (id: number) => void;
+}
+
+const useTodoStore = create<TodoStore>()(
   persist(
-    set => ({
+    (set, get) => ({
       todos: [],
       selectedList: [],
 
